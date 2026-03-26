@@ -1,0 +1,30 @@
+---
+import StandardPageChrome from '../../components/StandardPageChrome.astro'
+import { sanity } from '../../lib/sanity.js'
+import { asStr } from '../../lib/sanity-strings.js'
+
+let legal = {}
+try {
+  legal = await sanity.fetch(`*[_type == "legalPage" && slug.current == "privacy-policy"][0]{title, content}`)
+} catch (err) {
+  console.warn('[privacy-policy] Sanity fetch failed.', err)
+}
+
+const legalTitle = asStr(legal?.title) || 'Privacy Policy'
+const legalContent =
+  asStr(legal?.content) ||
+  'Add your Privacy Policy legal copy in Sanity under the Legal content type.'
+---
+
+<StandardPageChrome
+  title={`${legalTitle} | SunLife Gutters Tampas`}
+  description="Privacy Policy for SunLife Gutters Tampas."
+  navDdPrefix="privacy"
+>
+  <main class="section">
+    <div class="container" style="max-width: 70ch;">
+      <h1 class="section-title section-title-secondary">{legalTitle}</h1>
+      <p style="white-space: pre-line; line-height: 1.75; margin-top: 1rem;">{legalContent}</p>
+    </div>
+  </main>
+</StandardPageChrome>

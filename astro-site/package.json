@@ -1,0 +1,25 @@
+{
+  "name": "astro-site",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "dev:noproxy": "NO_PROXY=.sanity.io,sanity.io,apicdn.sanity.io HTTPS_PROXY= HTTP_PROXY= ALL_PROXY= astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "gen:index": "python3 ../scripts/gen-astro-index.py",
+    "sync:media": "rm -rf public/'Media (SLG)' && cp -R ../'Media (SLG)' public/"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.1",
+    "@sanity/client": "^7.20.0",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
+    "astro": "^6.0.8",
+    "sanitize-html": "^2.17.2"
+  }
+}
