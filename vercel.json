@@ -1,0 +1,36 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "astro",
+  "installCommand": "cd astro-site && npm ci",
+  "buildCommand": "cd astro-site && npm run build",
+  "outputDirectory": "astro-site/dist",
+  "trailingSlash": true,
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "sunlifegutterstampa.com"
+        }
+      ],
+      "destination": "https://www.sunlifegutterstampa.com/$1",
+      "permanent": true
+    },
+    {
+      "source": "/city-service-base/",
+      "destination": "/services/gutter-repair-tampa-fl/",
+      "permanent": true
+    },
+    {
+      "source": "/:path((?!api/)(?!.*\\.).*[^/])",
+      "destination": "/:path/",
+      "permanent": true
+    }
+  ],
+  "functions": {
+    "api/lead.js": {
+      "maxDuration": 30
+    }
+  }
+}

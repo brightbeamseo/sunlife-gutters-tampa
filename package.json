@@ -1,0 +1,5 @@
+{
+  "name": "sunlife-gutters-tampa",
+  "private": true,
+  "description": "Monorepo root. Vercel reads vercel.json here when the Git root is this folder; the site builds from astro-site/."
+}

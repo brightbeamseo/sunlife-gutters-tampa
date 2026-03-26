@@ -1,4 +1,4 @@
-# SunLife Gutters Tampa (SLG)
+# SunLife Gutters Tampa (SGT)
 
 This is a standalone clone of the Mile High Gutter website stack, prepared for a separate brand/site launch.
 
@@ -8,7 +8,11 @@ This is a standalone clone of the Mile High Gutter website stack, prepared for a
 - `sanity-studio/` - content studio (Sanity)
 - `styles.css` - site styling used by Astro layout import
 - `api/lead.js` - serverless lead endpoint
-- `Media (SLG)/` - copied media assets
+- `Media (SGT)/` - copied media assets
+
+## Vercel
+
+Do **not** delete the repo-root **`vercel.json`** or **`package.json`**: they tell Vercel to install/build **`astro-site/`** and publish **`astro-site/dist`**. In the Vercel project, either leave **Root Directory** empty (repo root). If you set **Root Directory** to `astro-site` instead, only `astro-site/vercel.json` counts and output should be **`dist`**.
 
 ## Required setup before first run
 
