@@ -4,54 +4,35 @@ import FooterSocialIcon from '../../components/FooterSocialIcon.astro'
 import FooterContactInfo from '../../components/FooterContactInfo.astro'
 import FooterHoursRow from '../../components/FooterHoursRow.astro'
 import { googleBusinessProfileUrl, isContactFooterColumnHeading } from '../../lib/footer-contact-heading.js'
-import { sanity } from '../../lib/sanity.js'
-import { getSiteSettings, mergeHeaderFromSettings } from '../../lib/site-settings.js'
+import { mergeHeaderFromSettings } from '../../lib/site-settings.js'
 import { heroBackgroundFor } from '../../lib/hero-backgrounds.js'
 import { sanitizeCmsHtml } from '../../lib/sanitize-cms-html.js'
 import { asStr, applyTemplate, mediaUrl } from '../../lib/sanity-strings.js'
 
-export async function getStaticPaths() {
-  try {
-    const pages = await sanity.fetch(
-      `*[_type == "cityServicePage" && defined(slug.current)]{"slug": slug.current}`
-    )
-    return (Array.isArray(pages) ? pages : [])
-      .map((p) => asStr(p?.slug))
-      .filter(Boolean)
-      .map((slug) => ({ params: { slug } }))
-  } catch (err) {
-    console.warn('[products-services/[slug]] Failed to load city service slugs.', err)
-    return []
-  }
-}
-
-const slug = asStr(Astro.params?.slug)
+/**
+ * City service page renderer used by the root `/{slug}/` route.
+ *
+ * The parent page fetches the Sanity documents and passes them here to avoid
+ * duplicate network requests.
+ */
+const { slug: slugProp, settings, homePage, cityPage } = Astro.props
+const slug = asStr(slugProp)
 const pageDescription = 'Professional gutter services in Tampa with fast scheduling and quality workmanship.'
+const _settings = settings ?? {}
+const _homePage = homePage ?? {}
+const _cityPage = cityPage ?? {}
 
-let settings = {}
-let homePage = {}
-let cityPage = {}
-try {
-  ;[settings, homePage, cityPage] = await Promise.all([
-    getSiteSettings(),
-    sanity.fetch(`*[_type == "homePage"][0]`),
-    sanity.fetch(`*[_type == "cityServicePage" && slug.current == $slug][0]`, { slug }),
-  ])
-} catch (err) {
-  console.warn(`[products-services/${slug}] Sanity fetch failed; using fallback placeholders.`, err)
-}
-
-const business = settings?.business ?? {}
-const header = mergeHeaderFromSettings(settings, homePage?.header)
-const hero = homePage?.hero ?? {}
-const services = homePage?.services ?? {}
-const faq = cityPage?.faq ?? homePage?.faq ?? {}
-const footerEstimate = settings?.footerEstimate ?? homePage?.footerEstimate ?? {}
+const business = _settings?.business ?? {}
+const header = mergeHeaderFromSettings(_settings, _homePage?.header)
+const hero = _homePage?.hero ?? {}
+const services = _homePage?.services ?? {}
+const faq = _cityPage?.faq ?? _homePage?.faq ?? {}
+const footerEstimate = _settings?.footerEstimate ?? _homePage?.footerEstimate ?? {}
 const footerEstimateFields = footerEstimate?.formFields ?? {}
-const formsCfg = settings?.forms ?? {}
-const footerBrand = settings?.footerBrand ?? homePage?.footerBrand ?? {}
-const footerColumns = settings?.footerColumns ?? homePage?.footerColumns ?? []
-const footerSupport = settings?.footerSupport ?? homePage?.footerSupport ?? {}
+const formsCfg = _settings?.forms ?? {}
+const footerBrand = _settings?.footerBrand ?? _homePage?.footerBrand ?? {}
+const footerColumns = _settings?.footerColumns ?? _homePage?.footerColumns ?? []
+const footerSupport = _settings?.footerSupport ?? _homePage?.footerSupport ?? {}
 
 const companyName = asStr(business.companyName) || 'SunLife Gutters Tampas'
 const phoneDisplay = asStr(business.phoneDisplay) || '(303) 000-0000'
@@ -76,18 +57,18 @@ const universalFormAriaLabel = asStr(formsCfg?.formAriaLabel) || 'City service l
 const universalRequiredIndicator = asStr(formsCfg?.requiredIndicator) || '*'
 const universalFormHeading = asStr(footerEstimate?.headline) || 'Get Started Today'
 const universalFormIntro = asStr(footerEstimate?.intro) || 'Short placeholder form for layout testing.'
-const heroBgSrc = asStr(cityPage?.layoutBackgrounds?.hero?.imageSrc) || heroBackgroundFor(`service-${slug}`)
-const servicesBgSrc = asStr(cityPage?.layoutBackgrounds?.services?.imageSrc)
+const heroBgSrc = asStr(_cityPage?.layoutBackgrounds?.hero?.imageSrc) || heroBackgroundFor(`service-${slug}`)
+const servicesBgSrc = asStr(_cityPage?.layoutBackgrounds?.services?.imageSrc)
 const heroBgStyle = heroBgSrc
   ? `background-image: linear-gradient(135deg, rgba(56, 69, 85, 0.88) 0%, rgba(56, 69, 85, 0.84) 50%, rgba(56, 69, 85, 0.88) 100%), url("${mediaUrl(heroBgSrc)}"); background-size: cover; background-position: center; background-repeat: no-repeat;`
   : undefined
 const servicesBgStyle = servicesBgSrc
   ? `background-color: #143980; background-image: linear-gradient(135deg, rgba(20, 57, 128, 0.94) 0%, rgba(26, 74, 158, 0.94) 100%), url("${mediaUrl(servicesBgSrc)}"); background-size: cover; background-position: center; background-repeat: no-repeat;`
   : undefined
-const sharedReviews = settings?.reviews ?? homePage?.reviews ?? {}
+const sharedReviews = _settings?.reviews ?? _homePage?.reviews ?? {}
 const reviewsToRender = sharedReviews
-const cityContentSections = Array.isArray(cityPage?.contentSections) ? cityPage.contentSections : []
-const mapEmbedUrl = asStr(cityPage?.mapEmbedUrl) || asStr(settings?.mapEmbedUrl)
+const cityContentSections = Array.isArray(_cityPage?.contentSections) ? _cityPage.contentSections : []
+const mapEmbedUrl = asStr(_cityPage?.mapEmbedUrl) || asStr(_settings?.mapEmbedUrl)
 const estimateCtaText = 'Request Estimate'
 const estimateCtaHref = '#contact'
 const pageH1 = asStr(cityPage?.headline) || asStr(hero?.headline) || 'Gutter Services in Tampa, FL'
@@ -97,22 +78,22 @@ const serviceHref = (svc) => {
   const explicit = asStr(svc?.href)
   if (explicit) return explicit
   const title = asStr(svc?.title).toLowerCase().trim()
-  if (!title) return '/products-services/'
+  if (!title) return '/services/'
   const knownSlugs = {
-    'gutter installation': 'gutter-installation-denver-co',
-    'gutter repair': 'gutter-repair-denver-co',
-    'gutter cleaning': 'gutter-cleaning-denver-co',
-    'gutter guards': 'gutter-guards-denver-co',
-    'heated gutters': 'snow-ice-solutions-heat-tape-denver-co',
-    'soffit & fascia': 'soffit-fascia-repair-denver-co',
-    'soffit and fascia': 'soffit-fascia-repair-denver-co',
+    'gutter installation': 'gutter-installation-tampa-fl',
+    'gutter repair': 'gutter-repair-tampa-fl',
+    'gutter cleaning': 'gutter-cleaning-tampa-fl',
+    'gutter guards': 'gutter-guards-tampa-fl',
+    'heated gutters': 'snow-ice-solutions-heat-tape-tampa-fl',
+    'soffit & fascia': 'soffit-fascia-repair-tampa-fl',
+    'soffit and fascia': 'soffit-fascia-repair-tampa-fl',
   }
-  if (knownSlugs[title]) return `/products-services/${knownSlugs[title]}/`
+  if (knownSlugs[title]) return `/${knownSlugs[title]}/`
   const generated = title
     .replace(/&/g, ' and ')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
-  return `/products-services/${generated}-denver-co/`
+  return `/${generated}-tampa-fl/`
 }
 ---
 
@@ -185,7 +166,7 @@ const serviceHref = (svc) => {
           ) : (
             <>
               <a href="/">Home</a>
-              <a href="/products-services/">Products & Services</a>
+              <a href="/services/">Products & Services</a>
             </>
           )}
           <a href={`tel:${phoneTel}`} class="btn btn-primary btn-lg">{callLabelNav}</a>
