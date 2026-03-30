@@ -23,6 +23,16 @@
       "permanent": true
     },
     {
+      "source": "/services/snow-ice-solutions-heat-tape-tampa-fl/",
+      "destination": "/services/custom-gutters-tampa-fl/",
+      "permanent": true
+    },
+    {
+      "source": "/the-dangers-of-frozen-gutters/",
+      "destination": "/heavy-rain-gutter-problems-tampa-fl/",
+      "permanent": true
+    },
+    {
       "source": "/:path((?!api/)(?!.*\\.).*[^/])",
       "destination": "/:path/",
       "permanent": true
