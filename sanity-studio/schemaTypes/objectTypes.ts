@@ -438,14 +438,66 @@ export const services = defineType({
 
 export const aboutVideo = defineType({
   name: 'aboutVideo',
-  title: 'About video',
+  title: 'About section video',
   type: 'object',
   fields: [
-    defineField({ name: 'posterSrc', type: 'string' }),
-    defineField({ name: 'posterLocation', type: 'string' }),
-    defineField({ name: 'sourceSrc', type: 'string' }),
-    defineField({ name: 'sourceType', type: 'string' }),
+    defineField({
+      name: 'sourceSrc',
+      type: 'string',
+      title: 'Video file path',
+      description:
+        'Path under /public after sync, e.g. Media (SGT)/Videos (SGT)/your-video.mp4 — run `npm run sync:media` in astro-site.',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'sourceType',
+      type: 'string',
+      title: 'MIME type',
+      description: 'Usually video/mp4',
+      initialValue: 'video/mp4',
+    }),
+    defineField({
+      name: 'posterSrc',
+      type: 'string',
+      title: 'Poster image path (optional)',
+      description: 'Still frame shown before play; optional. e.g. Media (SGT)/Images (SGT)/still.webp',
+    }),
+    defineField({ name: 'posterLocation', type: 'string', title: 'Poster note (internal)' }),
   ],
+})
+
+export const aboutBadgeItem = defineType({
+  name: 'aboutBadgeItem',
+  title: 'Trust badge',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'imageSrc',
+      type: 'string',
+      title: 'Badge image path',
+      description: 'e.g. Media (SGT)/Badges (SGT)/Best-of-Florida-2023-1.png',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'alt',
+      type: 'string',
+      title: 'Alt text',
+      description: 'Short label for screen readers (award name).',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'href',
+      type: 'string',
+      title: 'Link URL (optional)',
+      description: 'If set, the badge opens this URL in a new tab (verification page, directory listing, etc.).',
+    }),
+  ],
+  preview: {
+    select: { alt: 'alt', subtitle: 'imageSrc' },
+    prepare({ alt, subtitle }) {
+      return { title: alt || 'Badge', subtitle: subtitle || '' }
+    },
+  },
 })
 
 export const aboutCtas = defineType({
@@ -470,7 +522,14 @@ export const about = defineType({
     defineField({ name: 'bullets', type: 'array', of: [{ type: 'string' }] }),
     defineField({ name: 'video', type: 'aboutVideo' }),
     defineField({ name: 'badgesAriaLabel', type: 'string' }),
-    defineField({ name: 'badges', type: 'array', of: [{ type: 'string' }] }),
+    defineField({
+      name: 'badges',
+      type: 'array',
+      title: 'Trust badges (under video)',
+      description: 'Up to three image badges (PNG/SVG paths). Add optional links per badge.',
+      of: [{ type: 'aboutBadgeItem' }],
+      validation: (Rule) => Rule.max(6),
+    }),
     defineField({ name: 'ctas', type: 'aboutCtas' }),
   ],
 })
@@ -816,6 +875,7 @@ export const homepageObjectTypes = [
   serviceItem,
   services,
   aboutVideo,
+  aboutBadgeItem,
   aboutCtas,
   about,
   uniquePointItem,

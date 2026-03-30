@@ -420,13 +420,27 @@ const serviceHref = (svc) => {
         <div class="about-visual">
           <div class="media-card media-video">
             <video controls playsinline preload="metadata" poster={mediaUrl(asStr(aboutVideo?.posterSrc))}>
-              <source src={asStr(aboutVideo?.sourceSrc)} type={asStr(aboutVideo?.sourceType)} />
+              <source
+                src={mediaUrl(asStr(aboutVideo?.sourceSrc))}
+                type={asStr(aboutVideo?.sourceType).trim() || 'video/mp4'}
+              />
             </video>
           </div>
           <div class="about-badges" aria-label={asStr(about?.badgesAriaLabel)}>
-            {asStrArray(about?.badges).map((badge) => (
-              <div class="about-badge">{badge}</div>
-            ))}
+            {(Array.isArray(about?.badges) ? about.badges : []).map((badge) => {
+              const src = mediaUrl(asStr(badge?.imageSrc))
+              const alt = asStr(badge?.alt) || 'Trust badge'
+              const href = asStr(badge?.href).trim()
+              if (!src) return null
+              const img = <img class="about-badge-img" src={src} alt={alt} loading="lazy" decoding="async" />
+              return href ? (
+                <a class="about-badge about-badge--linked" href={href} target="_blank" rel="noopener noreferrer">
+                  {img}
+                </a>
+              ) : (
+                <div class="about-badge about-badge--img">{img}</div>
+              )
+            })}
           </div>
         </div>
       </div>

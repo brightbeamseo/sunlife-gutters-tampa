@@ -34,7 +34,12 @@ export function applyTemplate(template, vars) {
 
 export function mediaUrl(relPath) {
   if (relPath == null || relPath === '') return ''
-  return '/' + String(relPath).split('/').map(encodeURIComponent).join('/')
+  let p = String(relPath).trim()
+  // Legacy paths from the Mile High template pointed at Media (MHG)/…; assets now live under Media (SGT)/…
+  if (p.startsWith('Media (MHG)/')) {
+    p = `Media (SGT)/${p.slice('Media (MHG)/'.length)}`
+  }
+  return '/' + p.split('/').map(encodeURIComponent).join('/')
 }
 
 export function escapeHtml(s) {
