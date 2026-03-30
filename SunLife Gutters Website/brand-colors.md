@@ -1,4 +1,4 @@
-# SunLife Gutters Tampa — Brand Colors
+# SGT — Brand Colors
 
 | Role | Sanity Field | Hex |
 |------|-------------|-----|

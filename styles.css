@@ -1,4 +1,4 @@
-/* SunLife Gutters Tampa â Branding Board (Dark Blue #143980, Light Blue #527BBD, Dark Grey Azure #384555) + Kitchor-inspired */
+/* SGT — Branding board (Dark Blue #143980, Light Blue #527BBD, Dark Grey Azure #384555) + Kitchor-inspired */
 :root {
   --color-bg: #fafbfc;
   --color-bg-alt: #f2f4f8;
@@ -1159,11 +1159,11 @@ a.btn-primary[href^="tel:"]:hover {
 
 /* Services */
 .services {
-  /* Thornton drone photo: very subtle under the brand blue (see layoutBackgrounds.services in homepage-content.json) */
+  /* Tampa-area roofline photo under brand blue (see layoutBackgrounds.services in CMS) */
   background-color: #143980;
   background-image:
     linear-gradient(135deg, rgba(20, 57, 128, 0.94) 0%, rgba(26, 74, 158, 0.94) 100%),
-    url("/Media%20(SLG)/Images%20(Mile%20High)/sunlife-gutters-tampa-thornton-co-drone-overhead-view-complex-roof-gutter-installation-system.webp");
+    url("/Media%20(SGT)/Images%20(SGT)/sunlife-gutters-lakeland-fl-roof-gutter-system.webp");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -2024,7 +2024,7 @@ form[data-lead-form] button[type="submit"].is-busy {
 }
 
 
-/* MHG framework additions */
+/* Shared layout framework additions */
 .offer-bar {
   background: var(--color-dark);
   color: #fff;
@@ -2759,7 +2759,7 @@ form[data-lead-form] button[type="submit"].is-busy {
 .unique-points {
   position: relative;
   background: var(--color-surface);
-  background-image: url("/Media%20(SLG)/Images%20(Mile%20High)/sunlife-gutters-tampa-lakewood-new-home-gutters.webp");
+  background-image: url("/Media%20(SGT)/Images%20(SGT)/sunlife-gutters-tampa-residential-gutter-install.webp");
   background-size: cover;
   background-position: center;
 }

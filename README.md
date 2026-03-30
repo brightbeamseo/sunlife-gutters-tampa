@@ -1,6 +1,6 @@
-# SunLife Gutters Tampa (SGT)
+# SGT (SunLife Gutters Tampa)
 
-This is a standalone clone of the Mile High Gutter website stack, prepared for a separate brand/site launch.
+Astro + Sanity site for the SGT brand. This repository is the single source of truth.
 
 ## Included projects
 
@@ -16,7 +16,7 @@ Do **not** delete the repo-root **`vercel.json`** or **`package.json`**: they te
 
 ## Required setup before first run
 
-1. Create a new Sanity project/dataset for SunLife Gutters Tampa.
+1. Create or connect a Sanity project/dataset for SGT.
 2. Replace placeholders in:
    - `sanity-studio/sanity.config.ts` (`projectId`)
    - `sanity-studio/sanity.cli.ts` (`projectId`, `appId`)

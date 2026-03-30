@@ -12,7 +12,7 @@ const SINGLETON_SCHEMA_TYPES = new Set(['siteSettings', 'homePage'])
 
 export default defineConfig({
   name: 'default',
-  title: 'SunLife Gutters Tampa Website',
+  title: 'SGT Website',
 
   projectId: '04s0hjml',
   dataset: 'production',

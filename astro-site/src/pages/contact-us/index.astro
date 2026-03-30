@@ -31,7 +31,7 @@ const footerBrand = settings?.footerBrand ?? homePage?.footerBrand ?? {}
 const footerColumns = settings?.footerColumns ?? homePage?.footerColumns ?? []
 const footerSupport = settings?.footerSupport ?? homePage?.footerSupport ?? {}
 
-const companyName = asStr(business.companyName) || 'SunLife Gutters Tampas'
+const companyName = asStr(business.companyName) || 'SGT'
 const phoneDisplay = asStr(business.phoneDisplay) || '(303) 000-0000'
 const phoneTel = asStr(business.phoneTel) || '3030000000'
 const email = asStr(business.email) || 'hello@example.com'
@@ -47,8 +47,8 @@ const heroCallLabel = applyTemplate(asStr(homePage?.hero?.callCtaTemplate), { ph
 const logoAriaLabel = applyTemplate(asStr(header.logoAriaLabelTemplate), { companyName }) || companyName
 const navItems = Array.isArray(header.navItems) ? header.navItems : []
 
-const pageTitle = asStr(contactPage?.headline) || 'Contact Us | SunLife Gutters Tampas'
-const pageDescription = asStr(contactPage?.lead) || 'Contact SunLife Gutters Tampas for estimates and service.'
+const pageTitle = asStr(contactPage?.headline) || 'Contact Us | SGT'
+const pageDescription = asStr(contactPage?.lead) || 'Contact SGT for estimates and service.'
 const heroEyebrow = asStr(contactPage?.eyebrow) || 'Contact'
 const heroHeadline = asStr(contactPage?.headline) || 'Contact Us'
 const heroLead = asStr(contactPage?.lead) || 'Get in touch for a fast, free estimate.'

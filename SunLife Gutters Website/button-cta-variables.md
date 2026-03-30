@@ -1,4 +1,4 @@
-# SunLife Gutters Tampa — Button & CTA CSS Variables
+# SGT — Button & CTA CSS Variables
 
 | Field | CSS Variable | Role |
 |-------|-------------|------|

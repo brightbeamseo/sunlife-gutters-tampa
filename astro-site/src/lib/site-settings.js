@@ -177,7 +177,7 @@ export async function getSiteSettings() {
 }
 
 /**
- * Canonical Home page document for SunLife.
+ * Canonical Home page document for SGT.
  * No fallback / merge: this must match the Studio singleton exactly.
  */
 let homePageCache = null
