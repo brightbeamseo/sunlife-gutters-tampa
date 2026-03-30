@@ -4,6 +4,7 @@ import UniquePointIcon from '../components/UniquePointIcon.astro'
 import FooterSocialIcon from '../components/FooterSocialIcon.astro'
 import FooterContactInfo from '../components/FooterContactInfo.astro'
 import FooterHoursRow from '../components/FooterHoursRow.astro'
+import { externalLinkAttrs } from '../lib/external-link.js'
 import { googleBusinessProfileUrl, isContactFooterColumnHeading } from '../lib/footer-contact-heading.js'
 import { getSiteSettings, getHomePage, mergeHeaderFromSettings } from '../lib/site-settings.js'
 import {
@@ -169,7 +170,11 @@ const serviceHref = (svc) => {
           {asStr(offerBar?.textBeforeDiscount)}
           <strong>{asStr(offerBar?.discountLabel)}</strong>
           {asStr(offerBar?.textAfterDiscount)}
-          <a href={asStr(offerBar?.ctaHref)} class="offer-link">
+          <a
+            href={asStr(offerBar?.ctaHref)}
+            class="offer-link"
+            {...externalLinkAttrs(asStr(offerBar?.ctaHref))}
+          >
             <strong>{asStr(offerBar?.ctaText)}</strong>
           </a>
         </p>
@@ -207,7 +212,7 @@ const serviceHref = (svc) => {
                   <ul class="nav-dropdown-menu" id={ddId} role="menu">
                     {dropdown.map((link) => (
                       <li role="none">
-                        <a href={asStr(link.href)} role="menuitem">
+                        <a href={asStr(link.href)} role="menuitem" {...externalLinkAttrs(asStr(link.href))}>
                           {asStr(link.label)}
                         </a>
                       </li>
@@ -216,7 +221,11 @@ const serviceHref = (svc) => {
                 </div>
               )
             }
-            return <a href={href}>{label}</a>
+            return (
+              <a href={href} {...externalLinkAttrs(href)}>
+                {label}
+              </a>
+            )
           })}
           <a href={telLink} class="btn btn-primary btn-lg">{callLabelNav}</a>
         </nav>
@@ -375,7 +384,11 @@ const serviceHref = (svc) => {
           <p class="why-choose-note">{asStr(whyChoose?.note)}</p>
           <div class="why-choose-actions">
             <a href={telLink} class="btn btn-primary btn-lg">{whyCallLabel}</a>
-            <a href={asStr(whyCtas?.estimateHref)} class="btn btn-outline btn-lg request-estimate">
+            <a
+              href={asStr(whyCtas?.estimateHref)}
+              class="btn btn-outline btn-lg request-estimate"
+              {...externalLinkAttrs(asStr(whyCtas?.estimateHref))}
+            >
               {asStr(whyCtas?.estimate)}
             </a>
           </div>
@@ -413,7 +426,11 @@ const serviceHref = (svc) => {
           </ul>
           <div class="about-video-actions">
             <a href={telLink} class="btn btn-primary btn-lg">{aboutCallLabel}</a>
-            <a href={asStr(about?.ctas?.estimateHref)} class="btn btn-outline btn-lg request-estimate">
+            <a
+              href={asStr(about?.ctas?.estimateHref)}
+              class="btn btn-outline btn-lg request-estimate"
+              {...externalLinkAttrs(asStr(about?.ctas?.estimateHref))}
+            >
               {asStr(about?.ctas?.estimate)}
             </a>
           </div>
@@ -517,7 +534,7 @@ const serviceHref = (svc) => {
               <span>{reviewCountDisplay}</span>
             </p>
           </div>
-          <a href={reviewsCtaHref} class="btn btn-primary reviews-summary-cta">
+          <a href={reviewsCtaHref} class="btn btn-primary reviews-summary-cta" {...externalLinkAttrs(reviewsCtaHref)}>
             {asStr(reviewsSummary?.ctaText)}
           </a>
         </div>
@@ -573,7 +590,9 @@ const serviceHref = (svc) => {
             <p class="cities-label">{asStr(serviceArea?.citiesLabel)}</p>
             <nav class="cities-nav" aria-label={asStr(serviceArea?.citiesNavAriaLabel)}>
               {serviceArea?.cities?.map((c) => (
-                <a href={asStr(c.href)}>{asStr(c.name)}</a>
+                <a href={asStr(c.href)} {...externalLinkAttrs(asStr(c.href))}>
+                  {asStr(c.name)}
+                </a>
               ))}
             </nav>
           </div>
@@ -717,7 +736,7 @@ const serviceHref = (svc) => {
           <p class="footer-address">{descriptionShort}</p>
           <div class="footer-social" aria-label={asStr(footerBrand?.socialAriaLabel)}>
             {footerBrand?.socialLinks?.map((s) => (
-              <a href={asStr(s.href)} aria-label={asStr(s.ariaLabel)}>
+              <a href={asStr(s.href)} aria-label={asStr(s.ariaLabel)} {...externalLinkAttrs(asStr(s.href))}>
                 <FooterSocialIcon platform={asStr(s.platform)} />
               </a>
             ))}
@@ -729,7 +748,9 @@ const serviceHref = (svc) => {
             {col.links?.length ? (
               <nav class="footer-links" aria-label={asStr(col.ariaLabel)}>
                 {col.links.map((link) => (
-                  <a href={asStr(link.href)}>{asStr(link.label)}</a>
+                  <a href={asStr(link.href)} {...externalLinkAttrs(asStr(link.href))}>
+                    {asStr(link.label)}
+                  </a>
                 ))}
               </nav>
             ) : null}
@@ -756,15 +777,11 @@ const serviceHref = (svc) => {
   <div class="footer-support">
     <div class="container footer-support-inner">
       <p>
-        <a href={copyrightHref} set:html={copyrightInnerHtml}></a>
+        <a href={copyrightHref} set:html={copyrightInnerHtml} {...externalLinkAttrs(copyrightHref)}></a>
       </p>
       <nav aria-label={asStr(footerSupport?.ariaLabel)}>
         {footerSupport?.links?.map((link) => (
-          <a
-            href={asStr(link.href)}
-            target={asStr(link.target) || undefined}
-            rel={asStr(link.rel) || undefined}
-          >
+          <a href={asStr(link.href)} {...externalLinkAttrs(asStr(link.href))}>
             {asStr(link.label)}
           </a>
         ))}
