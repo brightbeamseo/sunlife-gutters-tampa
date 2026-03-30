@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro'
 import FooterSocialIcon from '../../components/FooterSocialIcon.astro'
 import FooterHoursRow from '../../components/FooterHoursRow.astro'
 import FooterContactInfo from '../../components/FooterContactInfo.astro'
+import { externalLinkAttrs } from '../../lib/external-link.js'
 import { googleBusinessProfileUrl, isContactFooterColumnHeading } from '../../lib/footer-contact-heading.js'
 import { sanity } from '../../lib/sanity.js'
 import { getSiteSettings, getHomePage, mergeHeaderFromSettings } from '../../lib/site-settings.js'
@@ -237,7 +238,7 @@ const universalRequiredIndicator = asStr(formsCfg?.requiredIndicator) || '*'
           <div class="contact-info">
             <h2 class="section-title">{asStr(footerEstimate?.headline) || 'Need Gutter Help in Tampa?'}</h2>
             <p>{asStr(footerEstimate?.intro) || 'Contact us for fast service and straightforward estimates.'}</p>
-            <FooterContactInfo variant="estimate" phoneTel={phoneTel} phoneDisplay={phoneDisplay} email={email} address={address} />
+            <FooterContactInfo variant="estimate" phoneTel={phoneTel} phoneDisplay={phoneDisplay} email={email} address={address} addressHref={addressHref} />
           </div>
           <form class="contact-form" data-lead-form="projects-footer" action={universalFormAction} method={universalFormMethod}>
             <div class="contact-form-grid">
@@ -252,10 +253,10 @@ const universalRequiredIndicator = asStr(formsCfg?.requiredIndicator) || '*'
         </div>
       </div>
     </section>
-    <div class="container"><div class="footer-inner"><div class="footer-brand-block footer-col">{logoWhite ? <img src={mediaUrl(logoWhite)} alt={companyName} class="footer-logo" /> : null}<p class="footer-address">{descriptionShort}</p><div class="footer-social" aria-label={asStr(footerBrand?.socialAriaLabel)}>{footerBrand?.socialLinks?.map((s) => (<a href={asStr(s.href)} aria-label={asStr(s.ariaLabel)}><FooterSocialIcon platform={asStr(s.platform)} /></a>))}</div></div>{footerColumns?.map((col) => (<div class="footer-col"><p class="footer-heading">{asStr(col.heading)}</p>{col.links?.length ? (<nav class="footer-links" aria-label={asStr(col.ariaLabel)}>{col.links.map((link) => (<a href={asStr(link.href)}>{asStr(link.label)}</a>))}</nav>) : null}{isContactFooterColumnHeading(col.heading) ? <FooterContactInfo variant="footer-column" phoneTel={phoneTel} phoneDisplay={phoneDisplay} email={email} address={address} addressHref={addressHref} /> : null}{col.hoursHeading ? <p class="footer-heading footer-hours-heading">{asStr(col.hoursHeading)}</p> : null}{col.hoursText ? <FooterHoursRow hoursText={col.hoursText} /> : null}</div>))}</div></div>
+    <div class="container"><div class="footer-inner"><div class="footer-brand-block footer-col">{logoWhite ? <img src={mediaUrl(logoWhite)} alt={companyName} class="footer-logo" /> : null}<p class="footer-address">{descriptionShort}</p><div class="footer-social" aria-label={asStr(footerBrand?.socialAriaLabel)}>{footerBrand?.socialLinks?.map((s) => (<a href={asStr(s.href)} aria-label={asStr(s.ariaLabel)} {...externalLinkAttrs(asStr(s.href))}><FooterSocialIcon platform={asStr(s.platform)} /></a>))}</div></div>{footerColumns?.map((col) => (<div class="footer-col"><p class="footer-heading">{asStr(col.heading)}</p>{col.links?.length ? (<nav class="footer-links" aria-label={asStr(col.ariaLabel)}>{col.links.map((link) => (<a href={asStr(link.href)} {...externalLinkAttrs(asStr(link.href))}>{asStr(link.label)}</a>))}</nav>) : null}{isContactFooterColumnHeading(col.heading) ? <FooterContactInfo variant="footer-column" phoneTel={phoneTel} phoneDisplay={phoneDisplay} email={email} address={address} addressHref={addressHref} /> : null}{col.hoursHeading ? <p class="footer-heading footer-hours-heading">{asStr(col.hoursHeading)}</p> : null}{col.hoursText ? <FooterHoursRow hoursText={col.hoursText} /> : null}</div>))}</div></div>
   </footer>
 
-  <div class="footer-support"><div class="container footer-support-inner"><p>© <span id="year"></span> — <a href={copyrightHref}>{companyName}</a></p><nav aria-label={asStr(footerSupport?.ariaLabel)}>{footerSupport?.links?.map((link) => (<a href={asStr(link.href)} target={asStr(link.target) || undefined} rel={asStr(link.rel) || undefined}>{asStr(link.label)}</a>))}</nav></div></div>
+  <div class="footer-support"><div class="container footer-support-inner"><p>© <span id="year"></span> — <a href={copyrightHref} {...externalLinkAttrs(copyrightHref)}>{companyName}</a></p><nav aria-label={asStr(footerSupport?.ariaLabel)}>{footerSupport?.links?.map((link) => (<a href={asStr(link.href)} {...externalLinkAttrs(asStr(link.href))}>{asStr(link.label)}</a>))}</nav></div></div>
 
   {galleryItems.length > 0 ? (
     <script define:vars={{ galleryItems }}>
