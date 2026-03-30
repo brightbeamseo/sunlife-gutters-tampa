@@ -2,7 +2,7 @@
 import BlogListLayout from '../../components/BlogListLayout.astro'
 import BlogPostGrid from '../../components/BlogPostGrid.astro'
 import { sanity } from '../../lib/sanity.js'
-import { getSiteSettings, mergeHeaderFromSettings } from '../../lib/site-settings.js'
+import { getSiteSettings, getHomePage, mergeHeaderFromSettings } from '../../lib/site-settings.js'
 import { heroBackgroundFor } from '../../lib/hero-backgrounds.js'
 import { asStr, applyTemplate, mediaUrl } from '../../lib/sanity-strings.js'
 import {
@@ -16,7 +16,7 @@ import { googleBusinessProfileUrl } from '../../lib/footer-contact-heading.js'
 let settings = {}
 let homePage = {}
 try {
-  ;[settings, homePage] = await Promise.all([getSiteSettings(), sanity.fetch(`*[_type == "homePage"][0]`)])
+  ;[settings, homePage] = await Promise.all([getSiteSettings(), getHomePage()])
 } catch (err) {
   console.warn('[blog index] Sanity fetch failed; using fallbacks.', err)
 }

@@ -5,7 +5,7 @@ import FooterHoursRow from '../../components/FooterHoursRow.astro'
 import FooterContactInfo from '../../components/FooterContactInfo.astro'
 import { googleBusinessProfileUrl, isContactFooterColumnHeading } from '../../lib/footer-contact-heading.js'
 import { sanity } from '../../lib/sanity.js'
-import { getSiteSettings, mergeHeaderFromSettings } from '../../lib/site-settings.js'
+import { getSiteSettings, getHomePage, mergeHeaderFromSettings } from '../../lib/site-settings.js'
 import { heroBackgroundFor } from '../../lib/hero-backgrounds.js'
 import { asStr, applyTemplate, mediaUrl } from '../../lib/sanity-strings.js'
 
@@ -15,7 +15,7 @@ let galleryPage = {}
 try {
   ;[settings, homePage, galleryPage] = await Promise.all([
     getSiteSettings(),
-    sanity.fetch(`*[_type == "homePage"][0]`),
+    getHomePage(),
     sanity.fetch(`*[_type == "galleryPage" && slug.current == "gallery"][0]`),
   ])
 } catch (err) {

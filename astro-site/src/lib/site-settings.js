@@ -175,3 +175,30 @@ export async function getSiteSettings() {
   }
   return siteSettingsCache
 }
+
+/**
+ * Canonical Home page document — same `_id` as Studio (`sanity.config.ts` → `homePageSingleton`).
+ * Prefer that doc; if it is missing or not yet published / incomplete, fall back to any other
+ * `homePage` (legacy import) so builds do not fail. Publish `homePageSingleton` so the site matches Studio.
+ */
+let homePageCache = null
+
+function homePageHasLayoutHero(hp) {
+  return Boolean(hp?.layoutBackgrounds?.hero?.imageSrc)
+}
+
+export async function getHomePage() {
+  if (homePageCache) {
+    return homePageCache
+  }
+  const singleton = await sanity.fetch(`*[_id == "homePageSingleton"][0]`)
+  if (singleton && homePageHasLayoutHero(singleton)) {
+    homePageCache = singleton
+    return homePageCache
+  }
+  const legacy = await sanity.fetch(
+    `*[_type == "homePage" && _id != "homePageSingleton"] | order(_updatedAt desc)[0]`,
+  )
+  homePageCache = legacy ?? singleton ?? null
+  return homePageCache
+}
