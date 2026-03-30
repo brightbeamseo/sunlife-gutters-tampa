@@ -83,6 +83,16 @@
       "permanent": true
     },
     {
+      "source": "/siding/",
+      "destination": "/services/siding-tampa-fl/",
+      "permanent": true
+    },
+    {
+      "source": "/siding-services-in-central-florida/",
+      "destination": "/services/siding-tampa-fl/",
+      "permanent": true
+    },
+    {
       "source": "/products-services/:slug/",
       "destination": "/services/:slug/",
       "permanent": true
