@@ -163,6 +163,22 @@ export async function getSiteSettings() {
       ? singleton.footerColumns
       : (linksSource?.footerColumns ?? singleton?.footerColumns)
 
+  /**
+   * Two `siteSettings` docs exist in some projects: the singleton and a legacy/alternate
+   * copy. The homepage iframe reads `mapEmbedUrl`; the alternate doc often holds the
+   * full Google **place** embed (`pb=…`) while the singleton still has a generic `?q=…`
+   * URL. Prefer the non-empty embed from `linksSource` when it differs.
+   */
+  const mapEmbedFromLinks =
+    typeof linksSource?.mapEmbedUrl === 'string' && linksSource.mapEmbedUrl.trim()
+      ? linksSource.mapEmbedUrl.trim()
+      : ''
+  const mapEmbedMerged =
+    mapEmbedFromLinks ||
+    (typeof singleton?.mapEmbedUrl === 'string' && singleton.mapEmbedUrl.trim()
+      ? singleton.mapEmbedUrl.trim()
+      : '')
+
   siteSettingsCache = {
     ...singleton,
     reviews: singleton?.reviews ?? linksSource?.reviews,
@@ -172,6 +188,7 @@ export async function getSiteSettings() {
     footerColumns: normalizeFooterColumns(footerColumnsRaw),
     footerSupport: normalizeFooterSupport(linksSource?.footerSupport ?? singleton?.footerSupport),
     forms: singleton?.forms ?? linksSource?.forms,
+    mapEmbedUrl: mapEmbedMerged,
   }
   return siteSettingsCache
 }
