@@ -777,4 +777,13 @@ const serviceHref = (svc) => {
     data-fallback-phrase={asStr(hero?.typedFallbackPhrase)}
     set:html={JSON.stringify(typedPhrases)}
   />
+  <style is:global>
+    main h1,
+    main h2,
+    main h3,
+    .hero-eyebrow,
+    .footer-heading {
+      text-transform: capitalize;
+    }
+  </style>
 </BaseLayout>
