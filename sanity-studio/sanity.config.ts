@@ -9,6 +9,7 @@ const HOME_PAGE_SINGLETON_ID = 'homePageSingleton'
 
 /** Types edited as a single doc each — hide the generic “list of all X” to avoid duplicate confusion. */
 const SINGLETON_SCHEMA_TYPES = new Set(['siteSettings', 'homePage'])
+const PINNED_SCHEMA_TYPES = new Set(['locationPage'])
 
 export default defineConfig({
   name: 'default',
@@ -37,8 +38,18 @@ export default defineConfig({
               .child(
                 S.document().schemaType('homePage').documentId(HOME_PAGE_SINGLETON_ID),
               ),
+            S.listItem()
+              .title('Location pages')
+              .id('locationPages')
+              .child(
+                S.documentTypeList('locationPage')
+                  .title('Location pages')
+                  .defaultOrdering([{field: 'title', direction: 'asc'}]),
+              ),
             ...S.documentTypeListItems().filter(
-              (item) => !SINGLETON_SCHEMA_TYPES.has(String(item.getId())),
+              (item) =>
+                !SINGLETON_SCHEMA_TYPES.has(String(item.getId())) &&
+                !PINNED_SCHEMA_TYPES.has(String(item.getId())),
             ),
           ]),
     }),
