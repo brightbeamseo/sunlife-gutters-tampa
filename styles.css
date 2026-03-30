@@ -521,8 +521,8 @@ a.btn-primary[href^="tel:"] {
 }
 
 a.btn-primary[href^="tel:"]:hover {
-  background: var(--color-accent-hover);
-  border-color: var(--color-accent-hover);
+  background: #35a77c;
+  border-color: #35a77c;
 }
 
 .btn-dark {
@@ -577,7 +577,7 @@ a.btn-primary[href^="tel:"]:hover {
   inset: 0;
   background-image:
     linear-gradient(135deg, rgba(56, 69, 85, 0.88) 0%, rgba(56, 69, 85, 0.84) 50%, rgba(56, 69, 85, 0.88) 100%),
-    url("/Media%20(SLG)/Images%20(Mile%20High)/sunlife-gutters-tampa-arvada-co-completed-gutter-installation-and-repair-on-finished-home-with-clean-lines-and-overcast-sky.webp");
+    url("/Media%20(SGT)/Images%20(SGT)/sunlife-gutters-tampa-copper-gutter-front-home.webp");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -752,8 +752,8 @@ a.btn-primary[href^="tel:"]:hover {
 }
 
 .hero-actions .cta1-primary-call:hover {
-  background: var(--color-accent-hover);
-  border-color: var(--color-accent-hover);
+  background: #35a77c;
+  border-color: #35a77c;
 }
 
 .hero-actions .btn-dark,
@@ -1321,8 +1321,7 @@ a.btn-primary[href^="tel:"]:hover {
 }
 
 .about-list li::before {
-  /* U+2713 CHECK MARK — use escape so encoding can’t corrupt the glyph */
-  content: "\2713";
+  content: "â";
   position: absolute;
   left: 0;
   color: var(--color-accent);

@@ -1,7 +1,7 @@
 import { asStr } from './sanity-strings.js'
 
 const HERO_POOL = [
-  'Media (SGT)/Images (SunLife)/sunlife-gutters-tampa-arvada-co-completed-gutter-installation-and-repair-on-finished-home-with-clean-lines-and-overcast-sky.webp',
+  'Media (SGT)/Images (SGT)/sunlife-gutters-tampa-copper-gutter-front-home.webp',
   'Media (SGT)/Images (SunLife)/sunlife-gutters-tampa-aurora-co-close-up-gutter-guard-installation-shingle-roof-sunlight-detail.webp',
   'Media (SGT)/Images (SunLife)/sunlife-gutters-tampa-aurora-new-construction-gutter-installation.webp',
   'Media (SGT)/Images (SunLife)/sunlife-gutters-tampa-broomfield-co-home-gutter-replacement-project-exterior-finished-view.webp',
