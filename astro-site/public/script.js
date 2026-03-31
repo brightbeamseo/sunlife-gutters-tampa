@@ -561,6 +561,20 @@
     }
   }
 
+  function buildFieldLabel(id, text, requiredMark) {
+    var label = document.createElement('label');
+    label.setAttribute('for', id);
+    label.appendChild(document.createTextNode(text + ' '));
+    if (requiredMark) {
+      var mark = document.createElement('span');
+      mark.className = 'required-mark';
+      mark.setAttribute('aria-hidden', 'true');
+      mark.textContent = requiredMark;
+      label.appendChild(mark);
+    }
+    return label;
+  }
+
   function makeAddressFieldFullWidth(input) {
     if (!input || !input.parentElement) return;
     var wrap = input.parentElement;
@@ -664,9 +678,51 @@
 
     leadForms.forEach(function (form) {
       var nameInput = form.querySelector('input[name="name"]');
-      if (nameInput) {
-        nameInput.setAttribute('autocomplete', 'name');
-        setFieldLabelText(nameInput, 'First Name Last Name');
+      if (nameInput && !form.querySelector('input[name="firstName"]')) {
+        var nameFieldWrap = nameInput.closest('.hero-form-field, .contact-form-field');
+        var requiredMarkText = '*';
+        if (nameFieldWrap) {
+          var existingMark = nameFieldWrap.querySelector('.required-mark');
+          if (existingMark && existingMark.textContent) requiredMarkText = existingMark.textContent.trim();
+        }
+        var firstId = (nameInput.id ? nameInput.id + '-first' : 'lead-first-name');
+        var lastId = (nameInput.id ? nameInput.id + '-last' : 'lead-last-name');
+
+        nameInput.removeAttribute('name');
+        nameInput.removeAttribute('id');
+        nameInput.removeAttribute('required');
+        if (nameFieldWrap) nameFieldWrap.remove();
+
+        var firstWrap = document.createElement('div');
+        var lastWrap = document.createElement('div');
+        firstWrap.className = 'hero-form-field contact-form-field';
+        lastWrap.className = 'hero-form-field contact-form-field';
+
+        var firstInput = document.createElement('input');
+        firstInput.id = firstId;
+        firstInput.name = 'firstName';
+        firstInput.type = 'text';
+        firstInput.required = true;
+        firstInput.autocomplete = 'given-name';
+
+        var lastInput = document.createElement('input');
+        lastInput.id = lastId;
+        lastInput.name = 'lastName';
+        lastInput.type = 'text';
+        lastInput.required = true;
+        lastInput.autocomplete = 'family-name';
+
+        firstWrap.appendChild(buildFieldLabel(firstId, 'First name', requiredMarkText));
+        firstWrap.appendChild(firstInput);
+        lastWrap.appendChild(buildFieldLabel(lastId, 'Last Name', requiredMarkText));
+        lastWrap.appendChild(lastInput);
+
+        var emailWrap = form.querySelector('input[name="email"]');
+        emailWrap = emailWrap ? emailWrap.closest('.hero-form-field, .contact-form-field') : null;
+        if (emailWrap && emailWrap.parentElement) {
+          emailWrap.parentElement.insertBefore(lastWrap, emailWrap);
+          emailWrap.parentElement.insertBefore(firstWrap, lastWrap);
+        }
       }
 
       var phoneInput = form.querySelector('input[name="phone"]');
@@ -706,7 +762,9 @@
         var fd = new FormData(form);
         var payload = {
           formSource: form.getAttribute('data-lead-form') || 'unknown',
-          name: (fd.get('name') || '').toString().trim(),
+          name: ((fd.get('firstName') || '').toString().trim() + ' ' + (fd.get('lastName') || '').toString().trim()).trim(),
+          firstName: (fd.get('firstName') || '').toString().trim(),
+          lastName: (fd.get('lastName') || '').toString().trim(),
           email: (fd.get('email') || '').toString().trim(),
           phone: formatUsPhoneDashes((fd.get('phone') || '').toString()),
           address: (fd.get('address') || '').toString().trim(),
