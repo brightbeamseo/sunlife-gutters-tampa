@@ -1,14 +1,14 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro'
-import FooterSocialIcon from '../../components/FooterSocialIcon.astro'
-import FooterContactInfo from '../../components/FooterContactInfo.astro'
-import FooterHoursRow from '../../components/FooterHoursRow.astro'
-import { externalLinkAttrs } from '../../lib/external-link.js'
-import { googleBusinessProfileUrl, isContactFooterColumnHeading } from '../../lib/footer-contact-heading.js'
-import { mergeHeaderFromSettings } from '../../lib/site-settings.js'
-import { heroBackgroundFor } from '../../lib/hero-backgrounds.js'
-import { sanitizeCmsHtml } from '../../lib/sanitize-cms-html.js'
-import { asStr, applyTemplate, mediaUrl } from '../../lib/sanity-strings.js'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import FooterSocialIcon from './FooterSocialIcon.astro'
+import FooterContactInfo from './FooterContactInfo.astro'
+import FooterHoursRow from './FooterHoursRow.astro'
+import { externalLinkAttrs } from '../lib/external-link.js'
+import { googleBusinessProfileUrl, isContactFooterColumnHeading } from '../lib/footer-contact-heading.js'
+import { mergeHeaderFromSettings } from '../lib/site-settings.js'
+import { heroBackgroundFor } from '../lib/hero-backgrounds.js'
+import { sanitizeCmsHtml } from '../lib/sanitize-cms-html.js'
+import { asStr, applyTemplate, mediaUrl } from '../lib/sanity-strings.js'
 
 /**
  * City service page renderer used by the root `/{slug}/` route.
