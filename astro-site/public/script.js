@@ -650,7 +650,7 @@
 
     function runFallbackSuggest(query) {
       var fallbackUrl =
-        'https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&q=' +
+        'https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&countrycodes=us&limit=5&q=' +
         encodeURIComponent(query);
       return fetch(fallbackUrl, { headers: { Accept: 'application/json' } })
         .then(function (res) { return res.ok ? res.json() : []; })
