@@ -132,8 +132,39 @@ const universalFormKicker = asStr(formsCfg?.formKicker) || 'Free Estimate'
 const universalFormAriaLabel = asStr(formsCfg?.formAriaLabel) || 'Lead form'
 const universalRequiredIndicator = asStr(formsCfg?.requiredIndicator) || '*'
 
+const normalizeLocationPageHref = (href) => {
+  const value = asStr(href).trim()
+  if (!value) return ''
+  const legacyMap = {
+    '/tampa-florida/': '/locations/tampa-florida/',
+    '/brandon-florida/': '/locations/brandon-florida/',
+    '/gutters-clearwater-fl/': '/locations/gutters-clearwater-fl/',
+    '/gutters-saint-petersburg-fl/': '/locations/gutters-saint-petersburg-fl/',
+    '/gutters-largo-fl/': '/locations/gutters-largo-fl/',
+    '/gutters-plant-city-fl/': '/locations/gutters-plant-city-fl/',
+    '/gutters-seffner-fl/': '/locations/gutters-seffner-fl/',
+    '/apollo-beach-fl/': '/locations/apollo-beach-fl/',
+    '/gutters-riverview-florida/': '/locations/gutters-riverview-florida/',
+  }
+  return legacyMap[value] || value
+}
+
+const normalizeServiceCardHref = (href) => {
+  const value = asStr(href).trim()
+  if (!value) return ''
+  const legacyMap = {
+    '/seamless-gutters/': '/services/seamless-gutters-tampa-fl/',
+    '/soffit-and-fascias/': '/services/soffit-fascia-repair-tampa-fl/',
+    '/super-gutters/': '/services/super-gutters-tampa-fl/',
+    '/screen-rooms-and-lanais/': '/services/screen-rooms-lanais-tampa-fl/',
+    '/underground-drainage/': '/services/underground-drainage-tampa-fl/',
+    '/siding/': '/services/siding-tampa-fl/',
+  }
+  return legacyMap[value] || value
+}
+
 const serviceHref = (svc) => {
-  const explicit = asStr(svc?.href)
+  const explicit = normalizeServiceCardHref(svc?.href)
   if (explicit) return explicit
   const title = asStr(svc?.title).toLowerCase().trim()
   if (!title) return '/services/seamless-gutters-tampa-fl/'
@@ -638,7 +669,7 @@ const serviceHref = (svc) => {
             <p class="cities-label">{asStr(serviceArea?.citiesLabel)}</p>
             <nav class="cities-nav" aria-label={asStr(serviceArea?.citiesNavAriaLabel)}>
               {serviceArea?.cities?.map((c) => (
-                <a href={asStr(c.href)} {...externalLinkAttrs(asStr(c.href))}>
+                <a href={normalizeLocationPageHref(c.href)} {...externalLinkAttrs(normalizeLocationPageHref(c.href))}>
                   {asStr(c.name)}
                 </a>
               ))}

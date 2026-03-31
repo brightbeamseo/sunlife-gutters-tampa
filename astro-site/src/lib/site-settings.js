@@ -3,6 +3,27 @@ import { sanity } from './sanity.js'
 function normalizeHref(href) {
   if (typeof href !== 'string') return href
   const trimmed = href.trim()
+  const legacyServiceHrefMap = {
+    '/seamless-gutters/': '/services/seamless-gutters-tampa-fl/',
+    '/soffit-and-fascias/': '/services/soffit-fascia-repair-tampa-fl/',
+    '/super-gutters/': '/services/super-gutters-tampa-fl/',
+    '/screen-rooms-and-lanais/': '/services/screen-rooms-lanais-tampa-fl/',
+    '/underground-drainage/': '/services/underground-drainage-tampa-fl/',
+    '/siding/': '/services/siding-tampa-fl/',
+  }
+  const legacyLocationHrefMap = {
+    '/tampa-florida/': '/locations/tampa-florida/',
+    '/brandon-florida/': '/locations/brandon-florida/',
+    '/gutters-clearwater-fl/': '/locations/gutters-clearwater-fl/',
+    '/gutters-saint-petersburg-fl/': '/locations/gutters-saint-petersburg-fl/',
+    '/gutters-largo-fl/': '/locations/gutters-largo-fl/',
+    '/gutters-plant-city-fl/': '/locations/gutters-plant-city-fl/',
+    '/gutters-seffner-fl/': '/locations/gutters-seffner-fl/',
+    '/apollo-beach-fl/': '/locations/apollo-beach-fl/',
+    '/gutters-riverview-florida/': '/locations/gutters-riverview-florida/',
+  }
+  if (legacyServiceHrefMap[trimmed]) return legacyServiceHrefMap[trimmed]
+  if (legacyLocationHrefMap[trimmed]) return legacyLocationHrefMap[trimmed]
   if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
     return href
   }

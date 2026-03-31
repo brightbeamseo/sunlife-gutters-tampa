@@ -2,8 +2,8 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-/** Canonical production URL (www) — matches astro-site/vercel.json host redirect */
-const site = 'https://www.sunlifegutterstampa.com';
+/** Canonical production URL (non-www) */
+const site = 'https://sunlifegutters.com';
 
 // https://astro.build/config
 export default defineConfig({

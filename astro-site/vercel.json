@@ -7,10 +7,10 @@
       "has": [
         {
           "type": "host",
-          "value": "sunlifegutterstampa.com"
+          "value": "www.sunlifegutters.com"
         }
       ],
-      "destination": "https://www.sunlifegutterstampa.com/$1",
+      "destination": "https://sunlifegutters.com/$1",
       "permanent": true
     },
     {

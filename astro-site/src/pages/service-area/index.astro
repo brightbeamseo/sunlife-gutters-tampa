@@ -131,7 +131,7 @@ function countyForLocation(row) {
 const cityPages = locationRows
   .map((row) => {
     const slug = asStr(row?.slug)
-    const name = asStr(row?.title) || asStr(row?.headline) || slugToCityName(slug)
+    const name = slugToCityName(slug) || asStr(row?.title) || asStr(row?.headline)
     if (!slug || !name) return null
     return {
       name,
@@ -275,7 +275,7 @@ const cityLinks = cityPages.length > 0 ? cityPages : serviceCities
             ))}
           </nav>
         </div>
-        <div class="map-wrap">
+        <div class="map-wrap" style="margin-top:1.5rem;">
           <iframe
             src={mapEmbedUrl}
             width="600"

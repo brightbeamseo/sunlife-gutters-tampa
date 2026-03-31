@@ -75,8 +75,22 @@ const estimateCtaHref = '#contact'
 const pageH1 = asStr(cityPage?.headline) || asStr(hero?.headline) || 'Gutter Services in Tampa, FL'
 const pageTitle = `${pageH1} | SGT`
 
+const normalizeServiceCardHref = (href) => {
+  const value = asStr(href).trim()
+  if (!value) return ''
+  const legacyMap = {
+    '/seamless-gutters/': '/services/seamless-gutters-tampa-fl/',
+    '/soffit-and-fascias/': '/services/soffit-fascia-repair-tampa-fl/',
+    '/super-gutters/': '/services/super-gutters-tampa-fl/',
+    '/screen-rooms-and-lanais/': '/services/screen-rooms-lanais-tampa-fl/',
+    '/underground-drainage/': '/services/underground-drainage-tampa-fl/',
+    '/siding/': '/services/siding-tampa-fl/',
+  }
+  return legacyMap[value] || value
+}
+
 const serviceHref = (svc) => {
-  const explicit = asStr(svc?.href)
+  const explicit = normalizeServiceCardHref(svc?.href)
   if (explicit) return explicit
   const title = asStr(svc?.title).toLowerCase().trim()
   if (!title) return '/services/seamless-gutters-tampa-fl/'
