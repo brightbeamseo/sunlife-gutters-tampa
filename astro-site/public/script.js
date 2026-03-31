@@ -589,18 +589,80 @@
 
   function setupMapboxAddressAutofill(input, accessToken) {
     if (!input || !accessToken) return;
-    var datalistId = (input.id || 'address') + '-suggestions';
-    var listEl = document.getElementById(datalistId);
-    if (!listEl) {
-      listEl = document.createElement('datalist');
-      listEl.id = datalistId;
-      document.body.appendChild(listEl);
-    }
-    input.setAttribute('list', datalistId);
     input.setAttribute('autocomplete', 'street-address');
     input.setAttribute('spellcheck', 'false');
 
     var suggestTimer = null;
+    var options = [];
+    var activeIdx = -1;
+    var wrap = input.closest('.hero-form-field, .contact-form-field') || input.parentElement;
+    if (wrap) wrap.style.position = 'relative';
+    var menu = document.createElement('div');
+    menu.className = 'address-lookup-menu';
+    menu.style.position = 'absolute';
+    menu.style.left = '0';
+    menu.style.right = '0';
+    menu.style.top = 'calc(100% + 4px)';
+    menu.style.background = '#fff';
+    menu.style.border = '1px solid #d9d9d9';
+    menu.style.borderRadius = '8px';
+    menu.style.boxShadow = '0 10px 20px rgba(0,0,0,0.08)';
+    menu.style.zIndex = '25';
+    menu.style.maxHeight = '220px';
+    menu.style.overflowY = 'auto';
+    menu.style.display = 'none';
+    if (wrap) wrap.appendChild(menu);
+
+    function closeMenu() {
+      menu.style.display = 'none';
+      menu.innerHTML = '';
+      options = [];
+      activeIdx = -1;
+    }
+
+    function renderMenu() {
+      menu.innerHTML = '';
+      if (!options.length) {
+        closeMenu();
+        return;
+      }
+      options.forEach(function (label, idx) {
+        var row = document.createElement('button');
+        row.type = 'button';
+        row.style.display = 'block';
+        row.style.width = '100%';
+        row.style.textAlign = 'left';
+        row.style.padding = '10px 12px';
+        row.style.border = '0';
+        row.style.borderBottom = idx < options.length - 1 ? '1px solid #efefef' : '0';
+        row.style.background = idx === activeIdx ? '#f7f7f7' : '#fff';
+        row.style.cursor = 'pointer';
+        row.textContent = label;
+        row.addEventListener('mousedown', function (e) {
+          e.preventDefault();
+          input.value = label;
+          closeMenu();
+        });
+        menu.appendChild(row);
+      });
+      menu.style.display = 'block';
+    }
+
+    function runFallbackSuggest(query) {
+      var fallbackUrl =
+        'https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&q=' +
+        encodeURIComponent(query);
+      return fetch(fallbackUrl, { headers: { Accept: 'application/json' } })
+        .then(function (res) { return res.ok ? res.json() : []; })
+        .then(function (rows) {
+          if (!Array.isArray(rows)) return [];
+          return rows
+            .map(function (r) { return (r && r.display_name) ? String(r.display_name).trim() : ''; })
+            .filter(Boolean)
+            .slice(0, 5);
+        })
+        .catch(function () { return []; });
+    }
 
     function runSuggest(query) {
       var url =
@@ -613,26 +675,61 @@
       fetch(url)
         .then(function (res) { return res.ok ? res.json() : null; })
         .then(function (data) {
-          if (!data || !Array.isArray(data.features)) return;
-          listEl.innerHTML = '';
-          data.features.forEach(function (item) {
-            var label = item && item.place_name ? item.place_name : '';
-            if (!label) return;
-            var opt = document.createElement('option');
-            opt.value = label;
-            listEl.appendChild(opt);
-          });
+          var labels = [];
+          if (data && Array.isArray(data.features)) {
+            labels = data.features
+              .map(function (item) { return item && item.place_name ? String(item.place_name).trim() : ''; })
+              .filter(Boolean)
+              .slice(0, 5);
+          }
+          if (labels.length) return labels;
+          return runFallbackSuggest(query);
+        })
+        .then(function (labels) {
+          options = Array.isArray(labels) ? labels : [];
+          activeIdx = -1;
+          renderMenu();
         })
         .catch(function () {
-          /* graceful fallback: native typing still works */
+          runFallbackSuggest(query).then(function (labels) {
+            options = Array.isArray(labels) ? labels : [];
+            activeIdx = -1;
+            renderMenu();
+          });
         });
     }
 
     input.addEventListener('input', function () {
       var q = String(input.value || '').trim();
-      if (q.length < 3) return;
+      if (q.length < 3) {
+        closeMenu();
+        return;
+      }
       if (suggestTimer) clearTimeout(suggestTimer);
       suggestTimer = setTimeout(function () { runSuggest(q); }, 220);
+    });
+    input.addEventListener('keydown', function (e) {
+      if (!options.length || menu.style.display === 'none') return;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        activeIdx = (activeIdx + 1) % options.length;
+        renderMenu();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        activeIdx = (activeIdx - 1 + options.length) % options.length;
+        renderMenu();
+      } else if (e.key === 'Enter') {
+        if (activeIdx >= 0 && options[activeIdx]) {
+          e.preventDefault();
+          input.value = options[activeIdx];
+          closeMenu();
+        }
+      } else if (e.key === 'Escape') {
+        closeMenu();
+      }
+    });
+    input.addEventListener('blur', function () {
+      setTimeout(closeMenu, 120);
     });
   }
 
