@@ -514,7 +514,7 @@
   var leadForms = Array.prototype.slice.call(document.querySelectorAll('form[data-lead-form]'));
 
   function readFormsConfig() {
-    var defaults = { submitPath: '/api/lead', recaptchaSiteKey: '' };
+    var defaults = { submitPath: '/api/lead', recaptchaSiteKey: '', mapboxToken: '' };
     if (!formsCfgEl || !formsCfgEl.textContent) {
       return defaults;
     }
@@ -523,7 +523,8 @@
       if (parsed && typeof parsed === 'object') {
         return {
           submitPath: typeof parsed.submitPath === 'string' && parsed.submitPath ? parsed.submitPath : defaults.submitPath,
-          recaptchaSiteKey: typeof parsed.recaptchaSiteKey === 'string' ? parsed.recaptchaSiteKey : ''
+          recaptchaSiteKey: typeof parsed.recaptchaSiteKey === 'string' ? parsed.recaptchaSiteKey : '',
+          mapboxToken: typeof parsed.mapboxToken === 'string' ? parsed.mapboxToken : ''
         };
       }
     } catch (e) {
@@ -541,12 +542,133 @@
     if (kind === 'success') el.classList.add('is-success');
   }
 
+  function setFieldLabelText(input, text) {
+    if (!input || !input.id) return;
+    var label = document.querySelector('label[for="' + input.id + '"]');
+    if (!label) return;
+    var firstNode = null;
+    for (var i = 0; i < label.childNodes.length; i += 1) {
+      if (label.childNodes[i] && label.childNodes[i].nodeType === 3) {
+        firstNode = label.childNodes[i];
+        break;
+      }
+    }
+    var normalized = text + ' ';
+    if (firstNode) {
+      firstNode.nodeValue = normalized;
+    } else {
+      label.insertBefore(document.createTextNode(normalized), label.firstChild || null);
+    }
+  }
+
+  function makeAddressFieldFullWidth(input) {
+    if (!input || !input.parentElement) return;
+    var wrap = input.parentElement;
+    if (wrap.classList.contains('hero-form-field')) wrap.classList.add('hero-form-field-full');
+    if (wrap.classList.contains('contact-form-field')) wrap.classList.add('contact-form-field-full');
+  }
+
+  function createSessionToken() {
+    if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
+    return 'mbx-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+  }
+
+  function setupMapboxAddressAutofill(input, accessToken) {
+    if (!input || !accessToken) return;
+    var datalistId = (input.id || 'address') + '-suggestions';
+    var listEl = document.getElementById(datalistId);
+    if (!listEl) {
+      listEl = document.createElement('datalist');
+      listEl.id = datalistId;
+      document.body.appendChild(listEl);
+    }
+    input.setAttribute('list', datalistId);
+    input.setAttribute('autocomplete', 'street-address');
+    input.setAttribute('spellcheck', 'false');
+
+    var suggestTimer = null;
+    var suggestionsByLabel = {};
+    var sessionToken = createSessionToken();
+
+    function runSuggest(query) {
+      var url =
+        'https://api.mapbox.com/search/searchbox/v1/suggest?q=' +
+        encodeURIComponent(query) +
+        '&country=US&language=en&types=address&limit=5&session_token=' +
+        encodeURIComponent(sessionToken) +
+        '&access_token=' +
+        encodeURIComponent(accessToken);
+
+      fetch(url)
+        .then(function (res) { return res.ok ? res.json() : null; })
+        .then(function (data) {
+          if (!data || !Array.isArray(data.suggestions)) return;
+          suggestionsByLabel = {};
+          listEl.innerHTML = '';
+          data.suggestions.forEach(function (item) {
+            var label = (item && (item.full_address || item.name || item.place_formatted)) ? (item.full_address || item.name || item.place_formatted) : '';
+            if (!label) return;
+            suggestionsByLabel[label] = item.mapbox_id || '';
+            var opt = document.createElement('option');
+            opt.value = label;
+            listEl.appendChild(opt);
+          });
+        })
+        .catch(function () {
+          /* graceful fallback: native typing still works */
+        });
+    }
+
+    function normalizeSelection() {
+      var chosen = String(input.value || '').trim();
+      var id = suggestionsByLabel[chosen];
+      if (!id) return;
+      var url =
+        'https://api.mapbox.com/search/searchbox/v1/retrieve/' +
+        encodeURIComponent(id) +
+        '?session_token=' +
+        encodeURIComponent(sessionToken) +
+        '&access_token=' +
+        encodeURIComponent(accessToken);
+      fetch(url)
+        .then(function (res) { return res.ok ? res.json() : null; })
+        .then(function (data) {
+          var feature = data && Array.isArray(data.features) ? data.features[0] : null;
+          var props = feature && feature.properties ? feature.properties : null;
+          var fullAddress = props && props.full_address ? props.full_address : '';
+          if (fullAddress) input.value = fullAddress;
+        })
+        .catch(function () {
+          /* keep user-entered value */
+        })
+        .finally(function () {
+          sessionToken = createSessionToken();
+        });
+    }
+
+    input.addEventListener('input', function () {
+      var q = String(input.value || '').trim();
+      if (q.length < 3) return;
+      if (suggestTimer) clearTimeout(suggestTimer);
+      suggestTimer = setTimeout(function () { runSuggest(q); }, 220);
+    });
+    input.addEventListener('change', normalizeSelection);
+    input.addEventListener('blur', normalizeSelection);
+  }
+
   if (leadForms.length) {
     var cfg = readFormsConfig();
     var endpoint = cfg.submitPath.indexOf('/') === 0 ? cfg.submitPath : '/' + cfg.submitPath;
     var recaptchaSiteKey = cfg.recaptchaSiteKey || '';
+    var mapboxToken = cfg.mapboxToken || '';
 
     leadForms.forEach(function (form) {
+      var nameInput = form.querySelector('input[name="name"]');
+      if (nameInput) {
+        nameInput.setAttribute('autocomplete', 'name');
+        setFieldLabelText(nameInput, 'First Name Last Name');
+      }
+
       var phoneInput = form.querySelector('input[name="phone"]');
       if (phoneInput) {
         phoneInput.setAttribute('maxlength', '12');
@@ -557,6 +679,16 @@
         phoneInput.addEventListener('blur', function () {
           formatPhoneInputLive(phoneInput);
         });
+      }
+
+      var locationInput = form.querySelector('input[name="location"]');
+      if (locationInput) {
+        locationInput.setAttribute('name', 'address');
+        locationInput.setAttribute('id', locationInput.id || (form.getAttribute('data-lead-form') || 'lead') + '-address');
+        locationInput.removeAttribute('required');
+        setFieldLabelText(locationInput, 'Address');
+        makeAddressFieldFullWidth(locationInput);
+        setupMapboxAddressAutofill(locationInput, mapboxToken);
       }
 
       form.addEventListener('submit', function (event) {
@@ -577,7 +709,8 @@
           name: (fd.get('name') || '').toString().trim(),
           email: (fd.get('email') || '').toString().trim(),
           phone: formatUsPhoneDashes((fd.get('phone') || '').toString()),
-          location: (fd.get('location') || '').toString().trim(),
+          address: (fd.get('address') || '').toString().trim(),
+          location: (fd.get('address') || '').toString().trim(),
           message: (fd.get('message') || '').toString().trim(),
           website: (fd.get('website') || '').toString().trim(),
           pageUrl: typeof window.location.href === 'string' ? window.location.href : ''
