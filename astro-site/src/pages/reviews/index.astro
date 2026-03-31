@@ -8,7 +8,7 @@ import { googleBusinessProfileUrl, isContactFooterColumnHeading } from '../../li
 import { sanity } from '../../lib/sanity.js'
 import { getSiteSettings, getHomePage, mergeHeaderFromSettings } from '../../lib/site-settings.js'
 import { heroBackgroundFor } from '../../lib/hero-backgrounds.js'
-import { asStr, applyTemplate, mediaUrl } from '../../lib/sanity-strings.js'
+import { asStr, applyTemplate, mediaUrl, statLookup } from '../../lib/sanity-strings.js'
 
 let settings = {}
 let homePage = {}
@@ -61,10 +61,15 @@ const heroBgStyle = heroBgSrc
 const homepageReviews = homePage?.reviews ?? {}
 const reviewsData = settings?.reviews ?? reviewsPage?.reviews ?? homepageReviews ?? {}
 const reviewSummary = reviewsData?.summary ?? homepageReviews?.summary ?? {}
+const reviewValues = reviewsData?.reviewValues ?? homepageReviews?.reviewValues ?? {}
 const homepageTestimonials = Array.isArray(homepageReviews?.testimonials) ? homepageReviews.testimonials : []
 const testimonials = homepageTestimonials.length > 0
   ? homepageTestimonials.slice(0, 4)
   : (Array.isArray(reviewsData?.testimonials) ? reviewsData.testimonials.slice(0, 4) : [])
+const reviewRating = statLookup(reviewValues, reviewSummary?.ratingValueKey)
+const reviewCount = statLookup(reviewValues, reviewSummary?.reviewCountKey)
+const reviewCountDisplay = `${asStr(reviewSummary?.reviewCountPrefix)}${reviewCount}${asStr(reviewSummary?.reviewCountSuffix)}`
+const reviewsCtaHref = asStr(reviewSummary?.ctaHref) || '/reviews/'
 
 const universalFormFields = footerEstimateFields
 const universalFormAction = asStr(formsCfg?.submitPath) || asStr(footerEstimate?.formAction) || '#'
@@ -157,46 +162,35 @@ const universalRequiredIndicator = asStr(formsCfg?.requiredIndicator) || '*'
       </div>
     </section>
 
-    <section class="section secondary-page-section reviews-page-intro" aria-labelledby="reviews-intro-heading">
-      <div class="container page-split page-split--media-end">
-        <div class="secondary-prose">
-          <h2 class="section-title section-title-secondary" id="reviews-intro-heading">Why homeowners leave five stars</h2>
-          <p>
-            Most of our reviews mention the same things: clear communication on scheduling, crews who arrive on time, and workmanship that looks finished from the street. We are proud of that pattern—it reflects how we train installers and how we follow up after the job.
-          </p>
-          <p>
-            Ratings below reflect feedback from Google Business Profile and other public sources. They are snapshots, not paid endorsements; we never incentivize reviews, and we invite honest feedback so we can keep improving.
-          </p>
-          <p>
-            After your own install, consider sharing your experience online—it helps neighbors find a trustworthy contractor when storms roll through Tampa Bay.
-          </p>
-        </div>
-        <figure class="page-split__media">
-          <img
-            src={mediaUrl('Media (SGT)/Images (SGT)/sunlife-gutters-tampa-townhome-gutter-install.webp')}
-            alt="Townhome roofline with new gutters in Tampa, Florida"
-            width="640"
-            height="480"
-            loading="lazy"
-            decoding="async"
-          />
-        </figure>
-      </div>
-    </section>
-
     <section class="section google-reviews">
       <div class="container">
         <h2 class="section-title reviews-title">{asStr(reviewsData?.headline) || 'Customer Reviews'}</h2>
         <div class="reviews-summary">
           <div class="reviews-summary-left">
             <p class="reviews-summary-brand">
-              <img src={mediaUrl(asStr(reviewSummary?.googleIconSrc))} alt={asStr(reviewSummary?.brandLabel)} class="google-logo" />
+              <img
+                src={mediaUrl(asStr(reviewSummary?.googleIconSrc))}
+                alt={asStr(reviewSummary?.brandLabel)}
+                class="google-logo"
+              />
               <span>{asStr(reviewSummary?.brandLabel)}</span>
             </p>
+            <p class="reviews-summary-rating">
+              <strong>{reviewRating}</strong>
+              <img
+                src={mediaUrl(asStr(reviewSummary?.starsImageSrc))}
+                alt={asStr(reviewSummary?.starsImageAlt)}
+                class="review-stars review-stars-inline"
+              />
+              <span>{reviewCountDisplay}</span>
+            </p>
           </div>
+          <a href={reviewsCtaHref} class="btn btn-primary reviews-summary-cta" {...externalLinkAttrs(reviewsCtaHref)}>
+            {asStr(reviewSummary?.ctaText)}
+          </a>
         </div>
         <div class="testimonials-grid">
-          {(testimonials.length > 0 ? testimonials : []).map((t) => (
+          {testimonials.map((t) => (
             <blockquote class="testimonial">
               <div class="review-brand review-brand-top">
                 <img src={mediaUrl(asStr(t.avatarSrc))} alt={asStr(t.author)} class="review-avatar" />
@@ -205,8 +199,20 @@ const universalRequiredIndicator = asStr(formsCfg?.requiredIndicator) || '*'
                   <span class="review-time">{asStr(t.timeAgo)}</span>
                 </div>
               </div>
-              <img src={mediaUrl(asStr(reviewSummary?.starsImageSrc))} alt={asStr(reviewSummary?.starsImageAlt)} class="review-stars" />
+              <img
+                src={mediaUrl(asStr(reviewSummary?.starsImageSrc))}
+                alt={asStr(reviewSummary?.starsImageAlt)}
+                class="review-stars"
+              />
               <p>&quot;{asStr(t.quote)}&quot;</p>
+              <div class="review-posted-on">
+                <img
+                  src={mediaUrl(asStr(reviewSummary?.googleIconSrc))}
+                  alt={asStr(reviewSummary?.brandLabel)}
+                  class="google-logo"
+                />
+                <span>{asStr(reviewsData?.postedOnLabel)}</span>
+              </div>
             </blockquote>
           ))}
         </div>
