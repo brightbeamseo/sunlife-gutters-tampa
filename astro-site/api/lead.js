@@ -135,6 +135,9 @@ export default {
     const utm_medium = String(body.utm_medium || '').trim().slice(0, 200);
     const utm_campaign = String(body.utm_campaign || '').trim().slice(0, 200);
     const utm_term = String(body.utm_term || '').trim().slice(0, 200);
+    const first_landing_url = String(body.first_landing_url || '').trim().slice(0, 2000);
+    const first_landing_path = String(body.first_landing_path || '').trim().slice(0, 2000);
+    const first_referrer = String(body.first_referrer || '').trim().slice(0, 2000);
 
     if (!name || !email || !phone) {
       return jsonResponse({ ok: false, error: 'missing_fields' }, 400);
@@ -156,6 +159,9 @@ export default {
       utm_medium,
       utm_campaign,
       utm_term,
+      first_landing_url,
+      first_landing_path,
+      first_referrer,
     };
 
     let zRes;

@@ -601,9 +601,35 @@
     return persisted;
   }
 
+  /** First-touch only: full landing URL, path+query (page location), and referrer — not overwritten on later pages. */
+  function captureFirstTouchAttribution() {
+    if (getCookie('sgt_first_landing_url')) return;
+    try {
+      var href = typeof window.location.href === 'string' ? window.location.href : '';
+      var path = typeof window.location.pathname === 'string' ? window.location.pathname : '';
+      var search = typeof window.location.search === 'string' ? window.location.search : '';
+      var pageLocation = (path + search).slice(0, 2000);
+      setCookie('sgt_first_landing_url', href.slice(0, 2000), 90);
+      setCookie('sgt_first_landing_path', pageLocation, 90);
+      var ref = typeof document.referrer === 'string' ? document.referrer : '';
+      setCookie('sgt_first_referrer', ref.slice(0, 2000), 90);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  function getPersistedFirstTouch() {
+    return {
+      first_landing_url: getCookie('sgt_first_landing_url').trim().slice(0, 2000),
+      first_landing_path: getCookie('sgt_first_landing_path').trim().slice(0, 2000),
+      first_referrer: getCookie('sgt_first_referrer').trim().slice(0, 2000)
+    };
+  }
+
   // Persist UTMs on every page load (even pages without forms),
   // so attribution survives navigation until form submit.
   getPersistedUtmParams();
+  captureFirstTouchAttribution();
 
   function setFieldLabelText(input, text) {
     if (!input || !input.id) return;
@@ -885,13 +911,16 @@
         setStatus(form, 'Sending…', null);
 
         var fd = new FormData(form);
+        var utm = getPersistedUtmParams();
+        var firstTouch = getPersistedFirstTouch();
         var payload = {
-          // Re-read at submit time so newest UTMs are always sent.
-          // Covers users who land with UTMs, navigate, then submit later.
-          utm_source: getPersistedUtmParams().utm_source || '',
-          utm_medium: getPersistedUtmParams().utm_medium || '',
-          utm_campaign: getPersistedUtmParams().utm_campaign || '',
-          utm_term: getPersistedUtmParams().utm_term || '',
+          utm_source: utm.utm_source || '',
+          utm_medium: utm.utm_medium || '',
+          utm_campaign: utm.utm_campaign || '',
+          utm_term: utm.utm_term || '',
+          first_landing_url: firstTouch.first_landing_url || '',
+          first_landing_path: firstTouch.first_landing_path || '',
+          first_referrer: firstTouch.first_referrer || '',
           formSource: form.getAttribute('data-lead-form') || 'unknown',
           name: ((fd.get('firstName') || '').toString().trim() + ' ' + (fd.get('lastName') || '').toString().trim()).trim(),
           firstName: (fd.get('firstName') || '').toString().trim(),
